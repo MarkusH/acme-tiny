@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import argparse, subprocess, json, os, sys, base64, binascii, time, hashlib, re, copy, textwrap, logging
+import argparse, subprocess, json, os, sys, base64, binascii, time, hashlib, re, copy, textwrap, logging, shutil
 try:
     from urllib.request import urlopen # Python 3
 except ImportError:
@@ -194,8 +194,11 @@ def main(argv):
     LOGGER.setLevel(args.quiet or LOGGER.level)
     signed_crt = get_crt(args.account_key, args.csr, args.acme_dir, log=LOGGER, CA=args.ca)
     if args.output:
-        with open(args.output, 'w') as fp:
+        tmp = args.output + '.tmp'
+        with open(tmp, 'w') as fp:
             fp.write(signed_crt)
+        # move file instead of writing in existing for more atomic behavior
+        shutil.move(tmp, args.output)
     else:
         sys.stdout.write(signed_crt)
 
