@@ -189,18 +189,25 @@ def main(argv):
     parser.add_argument("--quiet", action="store_const", const=logging.ERROR, help="suppress output except for errors")
     parser.add_argument("--ca", default=DEFAULT_CA, help="certificate authority, default is Let's Encrypt")
     parser.add_argument("--output", default=None, help="where to write the ceritficate")
+    parser.add_argument("--combine", default=None, help="Add the intermediate certificate to the output")
 
     args = parser.parse_args(argv)
     LOGGER.setLevel(args.quiet or LOGGER.level)
     signed_crt = get_crt(args.account_key, args.csr, args.acme_dir, log=LOGGER, CA=args.ca)
+    intermediate = ''
+    if args.combine:
+        with urlopen(args.combine) as conn:
+            intermediate = conn.read().decode('utf-8')
     if args.output:
         tmp = args.output + '.tmp'
         with open(tmp, 'w') as fp:
             fp.write(signed_crt)
+            fp.write(intermediate)
         # move file instead of writing in existing for more atomic behavior
         shutil.move(tmp, args.output)
     else:
         sys.stdout.write(signed_crt)
+        sys.stdout.write(intermediate)
 
 if __name__ == "__main__": # pragma: no cover
     main(sys.argv[1:])
