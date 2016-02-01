@@ -189,18 +189,25 @@ def main(argv=None):
     parser.add_argument("--ca", default=DEFAULT_CA, help="DEPRECATED! USE --directory-url INSTEAD!")
     parser.add_argument("--contact", metavar="CONTACT", default=None, nargs="*", help="Contact details (e.g. mailto:aaa@bbb.com) for your account-key")
     parser.add_argument("--output", default=None, help="where to write the ceritficate")
+    parser.add_argument("--combine", default=None, help="Add the intermediate certificate to the output")
 
     args = parser.parse_args(argv)
     LOGGER.setLevel(args.quiet or LOGGER.level)
     signed_crt = get_crt(args.account_key, args.csr, args.acme_dir, log=LOGGER, CA=args.ca, disable_check=args.disable_check, directory_url=args.directory_url, contact=args.contact)
+    intermediate = ''
+    if args.combine:
+        with urlopen(args.combine) as conn:
+            intermediate = conn.read().decode('utf-8')
     if args.output:
         tmp = args.output + '.tmp'
         with open(tmp, 'w') as fp:
             fp.write(signed_crt)
+            fp.write(intermediate)
         # move file instead of writing in existing for more atomic behavior
         shutil.move(tmp, args.output)
     else:
         sys.stdout.write(signed_crt)
+        sys.stdout.write(intermediate)
 
 if __name__ == "__main__": # pragma: no cover
     main(sys.argv[1:])
