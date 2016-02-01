@@ -2,7 +2,7 @@
 Description=Monthly ACME certificate renewal
 
 [Timer]
-OnCalendar=07:31:30
+OnCalendar=monthly
 
 [Install]
 WantedBy=timers.target
