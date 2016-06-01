@@ -5,4 +5,4 @@ Description=ACME cert generator for %i
 Type=oneshot
 EnvironmentFile=/etc/acme-tiny/%i.conf
 ExecStart=/usr/bin/acme-tiny --account-key $ACME_ACCOUNT_KEY --csr $ACME_CSR --acme-dir $ACME_DIR --output $ACME_CRT $ACME_COMBINE_WITH
-ExecStart=/usr/bin/sh -c "$ACME_RELOAD_WEBSERVER_CMD"
+ExecStartPost=/usr/bin/sh -c "$ACME_RELOAD_WEBSERVER_CMD"
