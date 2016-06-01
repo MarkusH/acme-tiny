@@ -3,6 +3,8 @@ Description=Monthly ACME certificate renewal
 
 [Timer]
 OnCalendar=monthly
+AccuracySec=1us
+RandomizedDelaySec=86400
 
 [Install]
 WantedBy=timers.target
