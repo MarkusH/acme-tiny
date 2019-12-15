@@ -1,18 +1,27 @@
 sudo: required
-dist: trusty
 language: python
-python:
-  - "2.7"
-  - "3.3"
-  - "3.4"
-  - "3.5"
-  - "nightly"
+matrix:
+  include:
+    - dist: xenial
+      python: "2.7"
+    - dist: trusty
+      python: "3.3"
+    - dist: xenial
+      python: "3.4"
+    - dist: xenial
+      python: "3.5"
+    - dist: xenial
+      python: "3.6"
+    - dist: xenial
+      python: "3.7"
+    - dist: xenial
+      python: "nightly"
 before_install:
   - sudo apt-get install fuse
   - sudo chmod a+r /etc/fuse.conf
 install:
   - pip install -r tests/requirements.txt
 script:
-  - coverage run --source ./ --omit ./tests/server.py -m unittest tests
+  - coverage run --source ./ --omit ./tests/server.py,./setup.py -m unittest tests
 after_success:
   - coveralls
